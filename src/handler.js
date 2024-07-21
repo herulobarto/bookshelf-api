@@ -77,6 +77,31 @@ const addBook = (request, h) => {
   return response;
 };
 
+// GET /books handler
+const getAllBooks = (request) => {
+  const { name, reading, finished } = request.query;
+  let filteredBooks = books;
+
+  if (name !== undefined) {
+    filteredBooks = filteredBooks.filter((book) => book.name.toLowerCase().includes(name.toLowerCase()));
+  } else if (reading !== undefined) {
+    filteredBooks = filteredBooks.filter((book) => book.reading === (reading === '1'));
+  } else if (finished !== undefined) {
+    filteredBooks = filteredBooks.filter((book) => book.finished === (finished === '1'));
+  }
+
+  return {
+    status: "success",
+    data: {
+      books: filteredBooks.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
+    },
+  };
+};
+
 // GET /books/{bookId} handler
 const getBookById = (request, h) => {
   const { bookId } = request.params;
@@ -190,6 +215,7 @@ const deleteBookById = (request, h) => {
 
 module.exports = {
   addBook,
+  getAllBooks,
   getBookById,
   updateBookById,
   deleteBookById,
