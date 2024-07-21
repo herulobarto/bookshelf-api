@@ -16,8 +16,8 @@ const addBook = (request, h) => {
   } = request.payload;
 
   const id = nanoid(16);
-  const insertedAt = new Date().toISOString();
-  const updatedAt = insertedAt;
+  const createdAt = new Date().toISOString();
+  const updatedAt = createdAt;
 
   const finished = pageCount === readPage;
 
@@ -54,7 +54,7 @@ const addBook = (request, h) => {
     readPage,
     finished,
     reading,
-    insertedAt,
+    createdAt,
     updatedAt,
   };
   books.push(newBook);
@@ -95,13 +95,17 @@ const getAllBooks = (request) => {
       const queryName = name.toLowerCase();
       return bookName.includes(queryName);
     });
-    // filter buku berdasarkan reading
-  } else if (reading !== undefined) {
+  }
+  
+  // filter buku berdasarkan reading
+  if (reading !== undefined) {
     filteredBooks = filteredBooks.filter(
       (book) => book.reading === (reading === "1")
     );
-    // filter buku berdasarkan finished
-  } else if (finished !== undefined) {
+  }
+
+  // filter buku berdasarkan finished
+  if (finished !== undefined) {
     filteredBooks = filteredBooks.filter(
       (book) => book.finished === (finished === "1")
     );
@@ -143,7 +147,7 @@ const getBookById = (request, h) => {
 };
 
 // PUT /books/{bookId} handler
-const BookById = (request, h) => {
+const updateBookById = (request, h) => {
   const { bookId } = request.params;
 
   const {
@@ -243,6 +247,6 @@ module.exports = {
   addBook,
   getAllBooks,
   getBookById,
-  BookById,
+  updateBookById,
   deleteBookById,
 };
