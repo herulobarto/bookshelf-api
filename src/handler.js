@@ -1,5 +1,5 @@
 const { nanoid } = require("nanoid");
-const books = require("./books");
+let books = [];
 
 // POST /books handler
 const addBook = (request, h) => {
@@ -18,10 +18,8 @@ const addBook = (request, h) => {
   const id = nanoid(16);
   const createdAt = new Date().toISOString();
   const updatedAt = createdAt;
-
   const finished = pageCount === readPage;
 
-  // client tidak melampirkan properti name pada request body.
   if (!name) {
     const response = h.response({
       status: "fail",
@@ -31,12 +29,10 @@ const addBook = (request, h) => {
     return response;
   }
 
-  // client melampirkan nilai properti readPage yang lebih besar dari nilai properti pageCount.
   if (readPage > pageCount) {
     const response = h.response({
       status: "fail",
-      message:
-        "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
+      message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount",
     });
     response.code(400);
     return response;
@@ -81,53 +77,10 @@ const addBook = (request, h) => {
   return response;
 };
 
-// GET /books handler
-const getAllBooks = (request) => {
-  // parameter query yang optional
-  const { name, reading, finished } = request.query;
-  // filteredBooks berisi buku yang terfilter berdasarkan parameter query
-  let filteredBooks = books;
-
-  // filter buku berdasarkan name
-  if (name !== undefined) {
-    filteredBooks = filteredBooks.filter((book) => {
-      const bookName = book.name.toLowerCase();
-      const queryName = name.toLowerCase();
-      return bookName.includes(queryName);
-    });
-  }
-  
-  // filter buku berdasarkan reading
-  if (reading !== undefined) {
-    filteredBooks = filteredBooks.filter(
-      (book) => book.reading === (reading === "1")
-    );
-  }
-
-  // filter buku berdasarkan finished
-  if (finished !== undefined) {
-    filteredBooks = filteredBooks.filter(
-      (book) => book.finished === (finished === "1")
-    );
-  }
-
-  return {
-    status: "success",
-    data: {
-      books: filteredBooks.map((book) => ({
-        id: book.id,
-        name: book.name,
-        publisher: book.publisher,
-      })),
-    },
-  };
-};
-
 // GET /books/{bookId} handler
 const getBookById = (request, h) => {
   const { bookId } = request.params;
-
-  const book = books.filter((n) => n.id === bookId)[0];
+  const book = books.find((n) => n.id === bookId);
 
   if (book !== undefined) {
     return {
@@ -149,7 +102,6 @@ const getBookById = (request, h) => {
 // PUT /books/{bookId} handler
 const updateBookById = (request, h) => {
   const { bookId } = request.params;
-
   const {
     name,
     year,
@@ -161,13 +113,10 @@ const updateBookById = (request, h) => {
     readPage,
     reading,
   } = request.payload;
-
   const updatedAt = new Date().toISOString();
-
   const index = books.findIndex((book) => book.id === bookId);
 
   if (index !== -1) {
-    // client tidak melampirkan properti name pada request body.
     if (!name) {
       const response = h.response({
         status: "fail",
@@ -177,13 +126,10 @@ const updateBookById = (request, h) => {
       return response;
     }
 
-    // client melampirkan nilai properti readPage
-    // yang lebih besar dari nilai properti pageCount.
     if (readPage > pageCount) {
       const response = h.response({
         status: "fail",
-        message:
-          "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount",
+        message: "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount",
       });
       response.code(400);
       return response;
@@ -222,7 +168,6 @@ const updateBookById = (request, h) => {
 // DELETE /books/{bookId} handler
 const deleteBookById = (request, h) => {
   const { bookId } = request.params;
-
   const index = books.findIndex((book) => book.id === bookId);
 
   if (index !== -1) {
@@ -245,7 +190,6 @@ const deleteBookById = (request, h) => {
 
 module.exports = {
   addBook,
-  getAllBooks,
   getBookById,
   updateBookById,
   deleteBookById,
