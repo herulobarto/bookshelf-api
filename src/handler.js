@@ -137,45 +137,45 @@ const updateBookById = (request, h) => {
   const updatedAt = new Date().toISOString();
   const index = books.findIndex((book) => book.id === bookId);
 
-  if (index !== -1) {
-    if (!name) {
-      return h.response({
-        status: "fail",
-        message: "Gagal memperbarui buku. Mohon isi nama buku",
-      }).code(400);
-    }
-
-    if (readPage > pageCount) {
-      return h.response({
-        status: "fail",
-        message: "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount",
-      }).code(400);
-    }
-
-    books[index] = {
-      ...books[index],
-      name,
-      author,
-      publisher,
-      year,
-      stock,
-      price,
-      pageCount,
-      readPage,
-      reading,
-      updatedAt,
-    };
-
+  if (index === -1) {
     return h.response({
-      status: "success",
-      message: "Buku berhasil diperbarui",
-    }).code(200);
+      status: "fail",
+      message: "Gagal memperbarui buku. Id tidak ditemukan",
+    }).code(404);
   }
 
+  if (!name) {
+    return h.response({
+      status: "fail",
+      message: "Gagal memperbarui buku. Mohon isi nama buku",
+    }).code(400);
+  }
+
+  if (readPage > pageCount) {
+    return h.response({
+      status: "fail",
+      message: "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount",
+    }).code(400);
+  }
+
+  books[index] = {
+    ...books[index],
+    name,
+    author,
+    publisher,
+    year,
+    stock,
+    price,
+    pageCount,
+    readPage,
+    reading,
+    updatedAt,
+  };
+
   return h.response({
-    status: "fail",
-    message: "Gagal memperbarui buku. Id tidak ditemukan",
-  }).code(404);
+    status: "success",
+    message: "Buku berhasil diperbarui",
+  }).code(200);
 };
 
 // DELETE /books/{bookId} handler
